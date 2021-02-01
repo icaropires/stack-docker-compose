@@ -3,7 +3,7 @@ version: '3.3'
 services:
   mysql: 
     image: mysql:5.7
-    container_name: mysql
+    container_name: app-devops_db
     volumes:
       - ./create_database.sql:/docker-entrypoint-initdb.d/create_database.sql
     env_file: ./env/mysql.env
@@ -34,10 +34,14 @@ services:
       - mysql
     env_file: ./env/node.env
 
-  msql-monitor:
+  mysql-monitor:
     image: prom/mysqld-exporter
     ports:
       - "9104:9104"  # metrics
     depends_on:
       - mysql
+    volumes:
+      - /etc/timezone:/etc/timezone
+      - /etc/localtime:/etc/localtime
+    restart: unless-stopped
     env_file: ./env/mysql_monitor.env
