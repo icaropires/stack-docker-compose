@@ -9,6 +9,8 @@ services:
 
   rabbitmq:
     image: rabbitmq:alpine
+    ports:
+      - "9101:15692"
 
   app-python:
     build:
