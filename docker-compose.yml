@@ -3,6 +3,7 @@ version: '3.3'
 services:
   mysql: 
     image: mysql:5.7
+    container_name: mysql
     volumes:
       - ./create_database.sql:/docker-entrypoint-initdb.d/create_database.sql
     env_file: ./env/mysql.env
@@ -10,7 +11,7 @@ services:
   rabbitmq:
     image: rabbitmq:alpine
     ports:
-      - "9101:15692"
+      - "9101:15692"  # metrics
 
   app-python:
     build:
@@ -20,7 +21,7 @@ services:
     depends_on:
       - rabbitmq
     ports:
-      - "8000:8000"
+      - "8000:8000"  # Also has /metrics
     env_file: ./env/python.env
 
   app-node:
@@ -32,3 +33,11 @@ services:
       - rabbitmq
       - mysql
     env_file: ./env/node.env
+
+  msql-monitor:
+    image: prom/mysqld-exporter
+    ports:
+      - "9104:9104"  # metrics
+    depends_on:
+      - mysql
+    env_file: ./env/mysql_monitor.env
